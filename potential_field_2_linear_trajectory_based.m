@@ -1,4 +1,5 @@
 %% Potential and Gradient
+clear all;
 load('wenbos_variables.mat');
 %Clean start
 
@@ -29,7 +30,7 @@ X = round(X,1);
 Y = round(Y,1);
 
 
-w = 1/20;
+w = 1/100;
 
 f_pots = zeros(size(X,1),size(X,2),2); % for 2 trajectories
 tic;

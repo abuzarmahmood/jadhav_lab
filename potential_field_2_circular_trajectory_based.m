@@ -1,4 +1,5 @@
 %% Potential and Gradient
+clear all;
 load('wenbos_variables.mat');
 %Clean start
 
@@ -29,9 +30,9 @@ X = round(X,1);
 Y = round(Y,1);
 
 
-w = 1/15;
-%f = @(x,y,x1,y1,w) (1+exp(-(w.*(x-x1).^2)+(w.*(y-y1).^2))).^-1;
-f = @(x,y,x1,y1,w) ((1+exp(-w.*((x-x1).^2+((y-y1).^2)))).^-1)-1;
+w = 1/15; %width parameter
+a=100; %%height parameter
+f = @(x,y,x1,y1,w) a.*((1+exp(-w.*((x-x1).^2+((y-y1).^2)))).^-1)-a;
 
 f_pots = zeros(size(X,1),size(X,2),2); % for 2 trajectories
 tic;
@@ -43,9 +44,10 @@ for path = 1:2
         all_min = [];
     for i = 1:size(coords_used,1)
         start_point = [coords_used(i,1) coords_used(i,2)];
-        increment_vec = [coords_used(i,3)-coords_used(i,1) coords_used(i,4)-coords_used(i,2)];
+        end_point = [coords_used(i,3) coords_used(i,4)];
+        increment_vec = end_point-start_point;
         increment_unit_vec = increment_vec./norm(increment_vec);
-        vec_linspace = linspace(1,norm(increment_vec),norm(increment_vec));
+        vec_linspace = linspace(1,norm(increment_vec),norm(increment_vec)); %Basically taking steps of one in a given direction.
         x1 = start_point(1) + increment_unit_vec(1).*vec_linspace;
         y1 = start_point(2) + increment_unit_vec(2).*vec_linspace;
 
@@ -165,6 +167,7 @@ for traj = 1:2
         
     end
 end
+toc;
 
 %%
 %%%%%%%%%%%%%%%%%%
