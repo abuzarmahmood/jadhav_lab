@@ -1,4 +1,4 @@
- clear all;
+clear all;
 close all;
 clc;
 %%
@@ -10,7 +10,7 @@ addpath(genpath('C:\Users\Justin-Admin\Downloads\Linpos code\usrlocal\'));
 % choose your animal
 animalprefix = 'KL8';
 day = 1;
-ep = 10;
+ep = 6;
 
 % change the directory of the animal folder accordingly
 if strcmp(animalprefix,'ER1')
@@ -24,7 +24,7 @@ task = loaddatastruct(dir, animalprefix, 'task', day); % get task info
 %%
 % parameters for linearization
 maxsegdiff = 100;
-maxv = 1000;
+maxv = 300;
 %%
 % make sure we have the direction information
 toknum = isdatafield(pos{day}{ep}.fields, 'dir');
@@ -415,6 +415,8 @@ for i = 1:size(pos,1)% time loop
             vect(i,1) = coordvector(newsegment,1);
             vect(i,2) = coordvector(newsegment,2);                          
             newpos(i,2:3) = round(tmppos(newind, 1:2));
+            
+           
             
             %find the linear distance for the point from each well
             %this requires a check for which direction the segment is

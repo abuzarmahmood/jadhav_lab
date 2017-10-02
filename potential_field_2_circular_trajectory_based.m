@@ -1,6 +1,6 @@
 %% Potential and Gradient
-clear all;
-load('wenbos_variables.mat');
+%clear all;
+%load('wenbos_variables.mat');
 %Clean start
 
 seg_start = segmentCoords(:,1:2);
@@ -13,8 +13,8 @@ for i=1:size(seg_dirs,1)
 end
 
 load('KL8trajinfo01.mat');
-traj_wells =  trajinfo{1, 1}{1, 10}.wellstend  ;
-traj_time = trajinfo{1, 1}{1, 10}.trajtime;
+traj_wells =  trajinfo{1, 1}{1, ep}.wellstend  ;
+traj_time = trajinfo{1, 1}{1, ep}.trajtime;
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30,7 +30,7 @@ X = round(X,1);
 Y = round(Y,1);
 
 
-w = 1/15; %width parameter
+w = 1/50; %width parameter
 a=100; %%height parameter
 f = @(x,y,x1,y1,w) a.*((1+exp(-w.*((x-x1).^2+((y-y1).^2)))).^-1)-a;
 
@@ -209,11 +209,11 @@ tic;
 toc;
     
 %{
-level = 2; %1 or 2
+level = 1; %1 or 2
 scatter(traj_pos{level}(:,1),traj_pos{level}(:,2),2)
 hold on
-plot(new_pos{level}(:,1),new_pos{level}(:,2))
 contour(X,Y,f_pots(:,:,level))
+plot(new_pos{level}(:,1),new_pos{level}(:,2))
 q = quiver(traj_pos{level}(:,1),traj_pos{level}(:,2),-quiv{level}(:,1),-quiv{level}(:,2));
 q.AutoScaleFactor = 0.3;
 %}

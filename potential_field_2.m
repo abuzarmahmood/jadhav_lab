@@ -1,15 +1,26 @@
 %% Potential and Gradient
-clear all;
-load('wenbos_variables.mat');
+%clear all;
+%load('wenbos_variables.mat');
 %Clean start
 seg_start = segmentCoords(:,1:2);
 seg_end = segmentCoords(:,3:4);
+seg_length = segmentLength;
 
 segmentCoords = round(segmentCoords,1);
 seg_dirs = segmentCoords(:,3:4) - segmentCoords(:,1:2);
 for i=1:size(seg_dirs,1)
     seg_dirs(i,:) = seg_dirs(i,:)/norm(seg_dirs(i,:));
 end
+
+%Messing with seg_dirs and seg_start
+if size(seg_dirs,1)==5
+    seg_dirs(2,:) = (seg_dirs(2,:)-seg_dirs(4,:))./2;
+    %seg_dirs(4,1) = seg_dirs(4,1)*(-1);
+    seg_dirs = seg_dirs([1 2 3 5],:);
+    seg_start = seg_start([1 2 3 5],:);
+    seg_length = seg_length([1 2 3 5]);
+end
+%}
 
 
 %%
@@ -22,7 +33,7 @@ den = 0.1;
 X = round(X,1);
 Y = round(Y,1);
 pots = zeros(size(X,1),size(X,2),5); % for 5 segments
-w = 1/15;
+w = 1/50;  %Wider contours avoid sharp changes in projection direction for points at the intersections, 1/50 works well
 
 for i = 1:length(coord)
     if ~mod(i,2) % even segment = horizontal
@@ -66,16 +77,6 @@ hold off
 %% Projection
 
 %% 
-
-%Messing with seg_dirs and seg_start
-%if length(segmentLength)==5
-    seg_dirs(2,:) = (seg_dirs(2,:)-seg_dirs(4,:))./2;
-    %seg_dirs(4,1) = seg_dirs(4,1)*(-1);
-    seg_dirs = seg_dirs([1 2 3 5],:);
-    seg_start = seg_start([1 2 3 5],:);
-    segmentLength = segmentLength([1 2 3 5]);
-%end
-%}
 
 
 
@@ -155,13 +156,14 @@ for i=1:length(raw_pos(:,1))
 end
 toc;
 
+
 %{
 figure
 contour(X,Y,f_pots)
 hold on
 scatter(raw_pos(:,1),raw_pos(:,2));
 q = quiver(raw_pos(:,1),raw_pos(:,2),-f_grad(:,1),-f_grad(:,2));
-scatter(new_pos(:,1),new_pos(:,2));
+plot(new_pos(:,1),new_pos(:,2));
 hold off
 %s = q.AutoScaleFactor;
 %q.AutoScaleFactor = 1000;
