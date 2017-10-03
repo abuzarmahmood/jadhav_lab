@@ -10,7 +10,7 @@ addpath(genpath('C:\Users\Justin-Admin\Downloads\Linpos code\usrlocal\'));
 % choose your animal
 animalprefix = 'KL8';
 day = 1;
-ep = 6;
+ep = 10;
 
 % change the directory of the animal folder accordingly
 if strcmp(animalprefix,'ER1')

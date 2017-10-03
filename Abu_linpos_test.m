@@ -55,6 +55,7 @@ for i = 1:size(traj_time,1)
         pause(0.0001);
         frame_h = get(handle(gcf),'JavaFrame');
         set(frame_h,'Maximized',1); 
+        pbaspect([1 1 1])
     end
 end
 
@@ -175,6 +176,13 @@ for i = 1:size(traj_time,1)
         set(frame_h,'Maximized',1); 
         
 end
+
+figure
+plot(newpos(:,2),newpos(:,3))
+hold on
+plot(new_pos(:,1),new_pos(:,2))
+hold off
+
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%

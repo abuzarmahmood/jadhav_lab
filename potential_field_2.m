@@ -45,7 +45,7 @@ den = 0.1;
 X = round(X,1);
 Y = round(Y,1);
 pots = zeros(size(X,1),size(X,2),5); % for 5 segments
-w = 1/50;  %Wider contours avoid sharp changes in projection direction for points at the intersections, 1/50 works well
+w = 1/100;  %Wider contours avoid sharp changes in projection direction for points at the intersections, 1/50 works well
 
 for i = 1:length(coord)
     if ~mod(i,2) % even segment = horizontal
@@ -91,18 +91,6 @@ hold off
 %% 
 
 
-
-%{
-coeffs_x = polyfit(X(1,1:10),1:10,1);
-coeffs_y = polyfit(Y(1:10,1)',1:10,1);
-ind_x = int16((coeffs_x(1)*(raw_pos(i,1)))+coeffs_x(2));
-ind_y = int16((coeffs_y(1)*(raw_pos(i,2)))+coeffs_y(2));
-function index = x_ind(x,coeffs_x)
-index = (coeffs_x(1)*(x))+coeffs_x(2);
-end
-ind_x
-%}
-
 tic;
 f_grad = [];
 for i=1:length(raw_pos(:,1))
@@ -141,26 +129,6 @@ for i=1:length(raw_pos(:,1))
      [val index] = min(all_dir_pos(:,3)); 
      
      
-    
-     %{
-    t_points = segmentCoords([1 2 4],3:4);
-    if    ~((all_dir_pos(index,1)>segs_sorted(index,1))...
-                   &(all_dir_pos(index,1)<segs_sorted(index,2))...
-                   &(all_dir_pos(index,2)>segs_sorted(index,3))...
-                   &(all_dir_pos(index,2)<segs_sorted(index,4)))
-               
-               d_from_t = all_dir_pos(index,1:2)-t_points;
-               distance = [];
-               for k = 1:size(d_from_t,1)
-                   distance(k) = norm(d_from_t(k,:));
-               end
-               [val closest_t] = min(distance);
-               new_pos(i,:) = t_points(closest_t,:);
-               
-    else             
-                new_pos(i,:) = all_dir_pos(index,1:2);
-    end
-     %}
     
         new_pos(i,1:2) = all_dir_pos(index,1:2);
         
