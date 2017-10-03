@@ -10,7 +10,19 @@ segmentCoords = round(segmentCoords,1);
 seg_dirs = segmentCoords(:,3:4) - segmentCoords(:,1:2);
 for i=1:size(seg_dirs,1)
     seg_dirs(i,:) = seg_dirs(i,:)/norm(seg_dirs(i,:));
+    
 end
+%%%%%%%%%%%%%%%%%
+    seg_start2 = segmentCoords(:,1:2);
+    seg_end2 = segmentCoords(:,3:4);
+    seg_length2 = segmentLength;
+
+    segmentCoords2 = round(segmentCoords,1);
+    seg_dirs2 = segmentCoords(:,3:4) - segmentCoords(:,1:2);
+    for i=1:size(seg_dirs2,1)
+        seg_dirs2(i,:) = seg_dirs2(i,:)/norm(seg_dirs2(i,:));
+    end
+%%%%%%%%%%%%%%%%%
 
 %Messing with seg_dirs and seg_start
 if size(seg_dirs,1)==5
@@ -111,7 +123,7 @@ segs_sorted([1 3 5],4) = max(raw_pos(:,1)+2);
 
 %%
 tic;
-new_pos = [];
+new_pos = zeros(size(raw_pos,1),3);
 for i=1:length(raw_pos(:,1))
     all_dir_pos = [];
     proj = [];
@@ -126,7 +138,9 @@ for i=1:length(raw_pos(:,1))
     end
     
     %To make sure the projection is inside the particular segment
-     [val index] = min(all_dir_pos(:,3));
+     [val index] = min(all_dir_pos(:,3)); 
+     
+     
     
      %{
     t_points = segmentCoords([1 2 4],3:4);
@@ -148,7 +162,19 @@ for i=1:length(raw_pos(:,1))
     end
      %}
     
-        new_pos(i,:) = all_dir_pos(index,1:2);
+        new_pos(i,1:2) = all_dir_pos(index,1:2);
+        
+        if index==2 %%To allow use of old distanceTable
+         if new_pos(i,1)<=seg_end(1,1)
+             index = 2;
+         else 
+             index = 5;
+         end
+        end
+     
+        new_pos(i,3) = index;  %%for calculation of lindist
+        
+        
     if ~(mod(i,1000))
         %display percent progress
         disp([num2str(round((i/poslength)*100)),'%']);
@@ -156,7 +182,54 @@ for i=1:length(raw_pos(:,1))
 end
 toc;
 
+%%
+%%%%%%%%%%%%%%%%%%%%
+%lindist calculation
+%%%%%%%%%%%%%%%%%%%%
+%1)Index of segment projection is on
+%2)Is segment start point forwards or backwards of all of the 3 wells
+%3)Add or subtact distnace of projection from segment start depending on
+%forward or backwards
 
+% **Have to calculate disance from resepective starting point since I can't
+% use proj because of splitting horizontal segment.
+
+%New segment layout
+%   *    *    *
+%   |    |    |
+%   3    1    4
+%   |    |    |
+%   |    |    |
+%   *-2--*-5--*
+%
+tic;
+
+new_dist_table = distanceTable(:,[1 2 3 5 4]);
+new_seg_start = seg_start2([1 2 3 5 4],:);
+new_seg_length = seg_length2([1 2 3 5 4]);
+lindist_abu = zeros(size(new_pos,1),3);
+%segmentDirection is same since flipping 4 and 5 has no effect. 
+
+for i = 1:size(new_pos,1)
+    index = new_pos(i,3);
+    dist_from_start = norm(new_pos(i,1:2)-new_seg_start(index,:));
+    distToSegment = new_dist_table(:,index)';
+    for wellcount = 1:size(new_dist_table,1)
+        
+        
+        
+                    if  (segmentDirection(wellcount,index) == 1)
+                        %it is aligned in the foreward direction
+                        segmentdist(1,wellcount)  = dist_from_start;
+                    else
+                        %it is aligned in the backward direction
+                        segmentdist(1,wellcount)  = seg_length2(index)-dist_from_start;
+                    end
+    end
+    lindist_abu(i,1:wellcount) = distToSegment + segmentdist;
+end
+
+toc;
 %{
 figure
 contour(X,Y,f_pots)
