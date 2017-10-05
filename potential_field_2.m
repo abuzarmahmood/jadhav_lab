@@ -65,7 +65,7 @@ f_pots = sum(pots,3);
 figure
 contour(X,Y,f_pots)
 s = surf(X,Y,f_pots)
-axis([-50 200 -50 150 -10 10])
+%axis([-50 200 -50 150 -10 10])
 set(s,'LineStyle','none')
 hold on
 
@@ -92,11 +92,16 @@ hold off
 
 
 tic;
+
+x_fit = polyfit(X(1,1:10),1:10,1);
+y_fit = polyfit(Y(1:10,1)',1:10,1);
+
 f_grad = [];
 for i=1:length(raw_pos(:,1))
-    t = (X(:)==raw_pos(i,1))&(Y(:)==raw_pos(i,2));
-    indt = find(t);
-    f_grad(i,:) = [px(indt) py(indt)];
+    x_val = int16(x_fit(1)*raw_pos(i,1) + x_fit(2)); %x index gives columns and y index gives rows
+    y_val = int16(y_fit(1)*raw_pos(i,2) + y_fit(2));
+    
+    f_grad(i,:) = [px(y_val,x_val) py(y_val,x_val)];
     f_grad(i,:) = f_grad(i,:)/norm(f_grad(i,:));
     
     if ~(mod(i,1000))
