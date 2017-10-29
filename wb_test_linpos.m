@@ -1,3 +1,4 @@
+tic
 clear all;
 close all;
 clc;
@@ -7,7 +8,7 @@ addpath(genpath('C:\Users\Justin-Admin\Downloads\Linpos code\Src_Matlab\'));
 addpath(genpath('C:\Users\Justin-Admin\Downloads\Linpos code\usrlocal\'));
 
 %%
-% choose your animal
+%choose your animal
 animalprefix = 'KL8';
 day = 1;
 ep = 10;
@@ -21,6 +22,7 @@ end
 
 pos = loaddatastruct(dir, animalprefix, 'pos', day); % get pos file
 task = loaddatastruct(dir, animalprefix, 'task', day); % get task info
+
 %%
 % parameters for linearization
 maxsegdiff = 100;
@@ -354,7 +356,8 @@ end
 inbound = 0;
 lastvalid = -1;
 lastsegind = -1;
-
+all_vels = zeros(size(pos,1),1);
+all_dis = zeros(size(pos,1),1);
 for i = 1:size(pos,1)% time loop
     %lookup the segment coordinates for this time point
     for findcoord = 1:length(segmentInfo.segmentLength)
@@ -390,14 +393,17 @@ for i = 1:size(pos,1)% time loop
             tmppnt = [0 0];
             tmppnt(1,1) = newpos(lastvalid,2);
             tmppnt(1,2) = newpos(lastvalid,3);
-            vel = dist(tmppnt,tmppos(:,1:2)) ./ (newpos(i,1) - ...
-                newpos(lastvalid,1));
+            vel = dist(tmppnt,tmppos(:,1:2)) ./ ((newpos(i,1) - newpos(lastvalid,1)));
+            all_vels(i) = min(vel);
+            all_dis(i) = min(dist(tmppnt,tmppos(:,1:2)));
             dis = dist(tmppnt,tmppos(:,1:2));
+                
 	    % get the number of segments we will have moved across
             segdiff = abs(tmppos(:,5) - lastsegind);
+            
             % the next point is the first point in the list with a
             % corresponding velocity less than maxv   
-            newind = min(find((vel < maxv) &(segdiff <= maxsegdiff)));
+            newind = min(find((vel < maxv) & (segdiff <= maxsegdiff))); %min(find((segdiff <= maxsegdiff)));
             lastid = find(tmppos(:,5) == lastsegind);
         else
             %no last valid segment has yet been found
@@ -441,4 +447,4 @@ for i = 1:size(pos,1)% time loop
         
     end
 end
-       
+toc

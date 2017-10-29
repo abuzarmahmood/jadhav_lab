@@ -419,7 +419,7 @@ f_pots = sum(pots,3);
 f = @(x,y,x1,y1,w) (1+exp(-(w1.*(x-x1).^2+w1.*(y-y1).^2))).^-1;
 
 %f_pots2 = f_pots;
-%{
+%
 tic;
 for i = [1 3 5]
     min_points = find(f_pots == min(f_pots(X>(points(i,1)-10) & X<(points(i,2)+10))));
@@ -520,7 +520,7 @@ end
 %%%%%%%%%%%%%%%%%%%%
 %lindist calculation
 %%%%%%%%%%%%%%%%%%%%
-%1)Index of segment projection is on
+%1)Index of segment projection is on new_pos
 %2)Is segment start point for  wards or backwards of all of the 3 wells
 %3)Add or subtact distnace of projection from segment start depending on
 %forward or backwards
